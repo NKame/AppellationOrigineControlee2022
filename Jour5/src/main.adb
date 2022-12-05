@@ -85,7 +85,7 @@ procedure Main is
       end loop;
    end Aff_Stocks;
 
-   procedure Bouge (L : SB.Bounded_String) is
+   procedure Bouge1 (L : SB.Bounded_String) is
       S, D, N   : Positive;
       Prev, Off : Natural := 1;
       Src, Dst  : Stock_Vec;
@@ -108,22 +108,50 @@ procedure Main is
       end loop;
       Stocks.Replace_Element (S, Src);
       Stocks.Replace_Element (D, Dst);
-   end Bouge;
-   procedure Soluce1 is
+   end Bouge1;
+
+
+   procedure Bouge2 (L : SB.Bounded_String) is
+      S, D, N   : Positive;
+      Prev, Off : Natural := 1;
+      Src, Dst  : Stock_Vec;
    begin
-      Put_Line ("Soluce1 :");
+      Off  := SB.Index (L, " from");
+      N    := Positive'Value (SB.To_String (L) (6 .. Off - 1));
+      Prev := Off;
+      Off  := SB.Index (L, " to", From => Prev);
+      S    := Positive'Value (SB.To_String (L) (Prev + 6 .. Off - 1));
+      D    := Positive'Value (SB.To_String (L) (Off + 4 .. SB.Length (L)));
+
+      -- Put_Line
+      --   (Natural'Image (S) & "=(" & Natural'Image (N) & ")=>" &
+      --   Natural'Image (D));
+      Src := Stocks.Element (S);
+      Dst := Stocks.Element (D);
+      for I in Src.Last_Index - N + 1 .. Src.Last_Index loop
+         Dst.Append (Src.Element(I));
+      end loop;
+      Src.Delete_Last(Ada.Containers.Count_Type(N));
+
+      Stocks.Replace_Element (S, Src);
+      Stocks.Replace_Element (D, Dst);
+   end Bouge2;
+
+   procedure Soluce is
+   begin
+      Put_Line ("Soluce :");
       Aff_Stocks;
       for I in Stocks.First_Index .. Stocks.Last_Index loop
          Put("" & Stocks.Element(I).Last_Element);
       end loop;
-   end Soluce1;
+   end Soluce;
 begin
    Open (F, Mode => In_File, Name => "ladata.txt");
    while not End_Of_File (F) loop
       L := SB.To_Bounded_String (Get_Line (F));
 
       if Mouvs then
-         Bouge (L);
+         Bouge2 (L);
          -- Aff_Stocks;
       else
          if SB.Length (L) = 0 then
@@ -138,5 +166,5 @@ begin
 
       -- Put_Line (SB.To_String (L));
    end loop;
-   Soluce1;
+   Soluce;
 end Main;
