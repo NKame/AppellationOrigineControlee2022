@@ -1,0 +1,5 @@
+project Jour14 is
+    for Source_Dirs use ("src");
+    for Object_Dir use "obj";
+    for Main use ("master.adb");
+end Jour14;
